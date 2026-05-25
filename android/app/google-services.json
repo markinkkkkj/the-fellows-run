@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "996572723666",
+    "project_id": "the-fellows-run",
+    "storage_bucket": "the-fellows-run.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996572723666:android:2b66d682ef9bd2dee1b00b",
+        "android_client_info": {
+          "package_name": "com.example.the_fellows_run"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ0K_zK0AHVIFQ9VyPZ8CLE66WR77-tF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

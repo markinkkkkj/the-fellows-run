@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(JAVA_HOME=/opt/android-studio/jbr ./gradlew assembleDebug)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(tee /tmp/gradle_output.txt)",
+      "Read(//tmp/**)",
+      "Bash(JAVA_HOME=/opt/android-studio/jbr ./gradlew assembleDebug --no-daemon --console=plain > /tmp/gradle_out.txt 2> /tmp/gradle_err.txt; echo \"Exit: $?\"; cat /tmp/gradle_out.txt; cat /tmp/gradle_err.txt)",
+      "Read(//home/markin/.gradle/daemon/**)",
+      "Read(//home/markin/.gradle/daemon/8.12/**)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
+    ]
+  }
+}
