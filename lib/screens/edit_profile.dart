@@ -1,0 +1,650 @@
+import 'dart:io';
+
+import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:the_fellows_run/screens/camera.dart';
+
+class EditProfile extends StatefulWidget {
+  const EditProfile({super.key});
+
+  @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _phoneMask = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {'#': RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
+  String? _photoUrl;
+  File? _newPhotoFile;
+  String? _originalEmail;
+  bool _isLoading = true;
+  bool _isSaving = false;
+  
+  Future<void> _loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final userData = doc.data();
+      if (userData != null) {
+        _nameController.text = userData['name'] ?? '';
+        _emailController.text = userData['email'] ?? '';
+        _phoneController.text = _formatPhone(userData['phone'] ?? '');
+        _photoUrl = userData['photoUrl'];
+        _originalEmail = userData['email'] ?? user.email;
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Erro ao tentar buscar dados do usuário: $error"))
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState((){
+          _isLoading = false;
+        });
+      }
+    }
+  }
+  
+  String _formatPhone(String digits) {
+    if (digits.length != 11) return digits;
+    return '(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}';
+  }
+
+  Future<String?> _askCurrentPassword() async {
+    final controller = TextEditingController();
+    final theme = Theme.of(context).colorScheme;
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1C1C1C),
+        title: Text('Confirme sua senha', style: TextStyle(color: theme.onSurface)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Pra mudar seu e-mail ou senha, precisamos confirmar quem você é.',
+              style: TextStyle(color: theme.onSurface.withOpacity(0.7), fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              obscureText: true,
+              autofocus: true,
+              style: TextStyle(color: theme.onSurface),
+              decoration: const InputDecoration(hintText: 'Senha atual'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar', style: TextStyle(color: theme.onSurface.withOpacity(0.6))),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text('Confirmar', style: TextStyle(color: theme.primary)),
+          ),
+        ],
+      ),
+    );
+
+    return result;
+  }
+
+  Future<void> _changePassword() async {
+    final theme = Theme.of(context).colorScheme;
+    final newPassController = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final shouldChange = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1C1C1C),
+        title: Text('Nova senha', style: TextStyle(color: theme.onSurface)),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: newPassController,
+                obscureText: true,
+                style: TextStyle(color: theme.onSurface),
+                decoration: const InputDecoration(hintText: 'Nova senha'),
+                validator: (v) {
+                  if (v == null || v.length < 6) return 'Mínimo 6 caracteres';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: confirmController,
+                obscureText: true,
+                style: TextStyle(color: theme.onSurface),
+                decoration: const InputDecoration(hintText: 'Confirmar nova senha'),
+                validator: (v) {
+                  if (v != newPassController.text) return 'As senhas não coincidem';
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancelar', style: TextStyle(color: theme.onSurface.withOpacity(0.6))),
+          ),
+          TextButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context, true);
+              }
+            },
+            child: Text('Salvar', style: TextStyle(color: theme.primary)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldChange != true) return;
+
+    final currentPass = await _askCurrentPassword();
+    if (currentPass == null || currentPass.isEmpty) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPass,
+      );
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassController.text);
+
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Senha alterada com sucesso!')),
+      );
+    } on FirebaseAuthException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('Erro: ${e.message}')));
+    }
+  }
+
+  Future<void> _pickPhoto() async {
+    final theme = Theme.of(context).colorScheme;
+
+    // diálogo pra escolher a fonte
+    final source = await showModalBottomSheet<_PhotoSource>(
+      context: context,
+      backgroundColor: const Color(0xFF1C1C1C),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Alterar foto de perfil',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: theme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _PhotoSourceTile(
+              icon: Icons.camera_alt_outlined,
+              label: 'Tirar foto com a câmera',
+              onTap: () => Navigator.pop(context, _PhotoSource.camera),
+            ),
+            _PhotoSourceTile(
+              icon: Icons.photo_library_outlined,
+              label: 'Escolher da galeria',
+              onTap: () => Navigator.pop(context, _PhotoSource.gallery),
+            ),
+            if (_photoUrl != null || _newPhotoFile != null)
+              _PhotoSourceTile(
+                icon: Icons.delete_outline,
+                label: 'Remover foto atual',
+                color: const Color(0xFFEF4444),
+                onTap: () => Navigator.pop(context, _PhotoSource.remove),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    switch (source) {
+      case _PhotoSource.camera:
+        await _pickFromCamera();
+        break;
+      case _PhotoSource.gallery:
+        await _pickFromGallery();
+        break;
+      case _PhotoSource.remove:
+        setState(() {
+          _newPhotoFile = null;
+          _photoUrl = null;
+        });
+        break;
+    }
+  }
+
+  Future<void> _pickFromCamera() async {
+    final result = await Navigator.push<XFile>(
+      context,
+      MaterialPageRoute(builder: (context) => Camera()),
+    );
+
+    if (result != null) {
+      setState((){
+        _newPhotoFile = File(result.path);
+      });
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 80,
+    );
+    if (picked != null) {
+      setState(() {
+        _newPhotoFile = File(picked.path);
+      });
+    }
+  }
+
+  DecorationImage? _buildAvatarImage() {
+    if (_newPhotoFile != null) {
+      return DecorationImage(image: FileImage(_newPhotoFile!), fit: BoxFit.cover);
+    }
+    if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+      return DecorationImage(image: NetworkImage(_photoUrl!), fit: BoxFit.cover);
+    }
+    return null;
+  }
+
+  Widget? _buildAvatarPlaceholder(ColorScheme theme) {
+    if (_newPhotoFile != null || (_photoUrl != null && _photoUrl!.isNotEmpty)) {
+      return null;
+    }
+    final name = _nameController.text.trim();
+    final initials = name.isEmpty
+        ? '?'
+        : name
+            .split(' ')
+            .take(2)
+            .map((p) => p.isNotEmpty ? p[0] : '')
+            .join()
+            .toUpperCase();
+    return Center(
+      child: Text(
+        initials,
+        style: TextStyle(
+          fontSize: 40,
+          fontWeight: FontWeight.w800,
+          color: theme.onPrimary,
+        ),
+      ),
+    );
+  }
+
+  Widget _label(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6, left: 4),
+      child: Text(
+        text.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF777777),
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _isSaving = true;
+    });
+    final user = FirebaseAuth.instance.currentUser!;
+    final messenger = ScaffoldMessenger.of(context);
+
+    try {
+      String? photoUrl = _photoUrl;
+      if (_newPhotoFile != null) {
+        final ref =  FirebaseStorage.instance.ref().child('users/${user.uid}/profile.jpg');
+        await ref.putFile(_newPhotoFile!);
+        photoUrl = await ref.getDownloadURL();
+      }
+      final newEmail = _emailController.text;
+      if (newEmail != _originalEmail) {
+        final currentPass = await _askCurrentPassword();
+        if (currentPass == null || currentPass.isEmpty) {
+          setState(() {
+            _isLoading = false;
+          });
+          return;
+        }
+        final credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: currentPass,
+        );
+        await user.reauthenticateWithCredential(credential);
+        await user.verifyBeforeUpdateEmail(newEmail);
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('Enviamos um e-mail de verificação. Confirme pelo link pra atualizar.'),
+            duration: Duration(seconds: 4),  
+          )
+        );
+      }
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'name': _nameController.text.trim(),
+        'email': newEmail,
+        'phone': _phoneController.text.replaceAll(RegExp(r'\D'), ''),
+        if (photoUrl != null) 'photoUrl': photoUrl,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+        );
+        Navigator.pop(context);
+      }
+    } on FirebaseAuthException catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text("Erro ao autenticar o usuário: ${error.message}"))
+      );
+    } catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text("Erro ao salvar os dados: $error"))
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Editar perfil',
+            style: TextStyle(color: theme.onPrimary, fontWeight: FontWeight.w700),
+          ),
+          backgroundColor: theme.primary,
+          iconTheme: IconThemeData(color: theme.onPrimary),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Editar perfil',
+          style: TextStyle(color: theme.onPrimary, fontWeight: FontWeight.w700),
+        ),
+        backgroundColor: theme.primary,
+        iconTheme: IconThemeData(color: theme.onPrimary),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ─── FOTO ─────────────────────────────────────
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: theme.primary,
+                          shape: BoxShape.circle,
+                          image: _buildAvatarImage(),
+                        ),
+                        child: _buildAvatarPlaceholder(theme),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickPhoto,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: theme.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF121212),
+                                width: 3,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: theme.onPrimary,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: TextButton(
+                    onPressed: _pickPhoto,
+                    child: Text(
+                      'Alterar foto',
+                      style: TextStyle(
+                        color: theme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // ─── CAMPOS ───────────────────────────────────
+                _label('Nome completo'),
+                TextFormField(
+                  controller: _nameController,
+                  style: TextStyle(color: theme.onSurface),
+                  decoration: const InputDecoration(hintText: 'Nome completo'),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Informe seu nome';
+                    if (v.trim().split(' ').length < 2) {
+                      return 'Informe nome e sobrenome';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                _label('E-mail'),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: TextStyle(color: theme.onSurface),
+                  decoration: const InputDecoration(hintText: 'E-mail'),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Informe seu e-mail';
+                    final regex = RegExp(r'^[\w\.\-]+@[\w\-]+\.[\w\-\.]+$');
+                    if (!regex.hasMatch(v.trim())) return 'E-mail inválido';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                _label('WhatsApp'),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [_phoneMask],
+                  style: TextStyle(color: theme.onSurface),
+                  decoration: const InputDecoration(hintText: 'WhatsApp'),
+                  validator: (v) {
+                    final digits = v?.replaceAll(RegExp(r'\D'), '') ?? '';
+                    if (digits.isEmpty) return 'Informe seu WhatsApp';
+                    if (digits.length != 11) return 'Número inválido';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                OutlinedButton.icon(
+                  onPressed: _changePassword,
+                  icon: Icon(Icons.lock_outline, color: theme.primary),
+                  label: Text(
+                    'Alterar senha',
+                    style: TextStyle(
+                      color: theme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(54),
+                    side: BorderSide(color: theme.primary, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                ElevatedButton(
+                  onPressed: _isSaving ? null : _save,
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.black,
+                          ),
+                        )
+                      : const Text('Salvar alterações'),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _PhotoSource { camera, gallery, remove }
+
+class _PhotoSourceTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? color;
+  final VoidCallback onTap;
+
+  const _PhotoSourceTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    final effectiveColor = color ?? theme.onSurface;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, color: effectiveColor, size: 22),
+              const SizedBox(width: 16),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: effectiveColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
