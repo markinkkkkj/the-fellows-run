@@ -58,10 +58,10 @@ class _SettingsState extends State<Settings> {
     final navigator = Navigator.of(context);
     try {
       await FirebaseAuth.instance.signOut();
-      navigator.pop();
       navigator.pushReplacement(
         MaterialPageRoute(builder: (context) => Login())
       );
+      navigator.pop();
     } on FirebaseAuthException catch (error) {
       messenger.showSnackBar(
         SnackBar(content: Text(error.message ?? 'Erro ao sair')),
