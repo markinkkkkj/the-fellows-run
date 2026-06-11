@@ -1,4 +1,4 @@
-# the_fellows_run
+# The Fellows Run
 
 A new Flutter project.
 
