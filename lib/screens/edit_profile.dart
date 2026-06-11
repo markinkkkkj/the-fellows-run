@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:the_fellows_run/screens/camera.dart';
+import 'package:the_fellows_run/services/user_cache.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -33,30 +33,16 @@ class _EditProfileState extends State<EditProfile> {
   bool _isSaving = false;
   
   Future<void> _loadUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      final userData = doc.data();
-      if (userData != null) {
-        _nameController.text = userData['name'] ?? '';
-        _emailController.text = userData['email'] ?? '';
-        _phoneController.text = _formatPhone(userData['phone'] ?? '');
-        _photoUrl = userData['photoUrl'];
-        _originalEmail = userData['email'] ?? user.email;
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erro ao tentar buscar dados do usuário: $error"))
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState((){
-          _isLoading = false;
-        });
-      }
+    final data = await UserCache.load();
+    _nameController.text = data['name'] ?? '';
+    _emailController.text = data['email'] ?? '';
+    _phoneController.text = _formatPhone(data['phone'] ?? '');
+    _photoUrl = data['photoUrl'];
+    _originalEmail = data['email'] ?? '';
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
   
@@ -191,7 +177,6 @@ class _EditProfileState extends State<EditProfile> {
   Future<void> _pickPhoto() async {
     final theme = Theme.of(context).colorScheme;
 
-    // diálogo pra escolher a fonte
     final source = await showModalBottomSheet<_PhotoSource>(
       context: context,
       backgroundColor: const Color(0xFF1C1C1C),
@@ -200,46 +185,48 @@ class _EditProfileState extends State<EditProfile> {
       ),
       builder: (context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(2),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Alterar foto de perfil',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                color: theme.onSurface,
+              const SizedBox(height: 20),
+              Text(
+                'Alterar foto de perfil',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: theme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            _PhotoSourceTile(
-              icon: Icons.camera_alt_outlined,
-              label: 'Tirar foto com a câmera',
-              onTap: () => Navigator.pop(context, _PhotoSource.camera),
-            ),
-            _PhotoSourceTile(
-              icon: Icons.photo_library_outlined,
-              label: 'Escolher da galeria',
-              onTap: () => Navigator.pop(context, _PhotoSource.gallery),
-            ),
-            if (_photoUrl != null || _newPhotoFile != null)
+              const SizedBox(height: 20),
               _PhotoSourceTile(
-                icon: Icons.delete_outline,
-                label: 'Remover foto atual',
-                color: const Color(0xFFEF4444),
-                onTap: () => Navigator.pop(context, _PhotoSource.remove),
+                icon: Icons.camera_alt_outlined,
+                label: 'Tirar foto com a câmera',
+                onTap: () => Navigator.pop(context, _PhotoSource.camera),
               ),
-            const SizedBox(height: 8),
-          ],
+              _PhotoSourceTile(
+                icon: Icons.photo_library_outlined,
+                label: 'Escolher da galeria',
+                onTap: () => Navigator.pop(context, _PhotoSource.gallery),
+              ),
+              if (_photoUrl != null || _newPhotoFile != null)
+                _PhotoSourceTile(
+                  icon: Icons.delete_outline,
+                  label: 'Remover foto atual',
+                  color: const Color(0xFFEF4444),
+                  onTap: () => Navigator.pop(context, _PhotoSource.remove),
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
@@ -350,18 +337,20 @@ class _EditProfileState extends State<EditProfile> {
 
     try {
       String? photoUrl = _photoUrl;
+      final ref =  FirebaseStorage.instance.ref().child('users/${user.uid}/profile.jpg');
       if (_newPhotoFile != null) {
-        final ref =  FirebaseStorage.instance.ref().child('users/${user.uid}/profile.jpg');
         await ref.putFile(_newPhotoFile!);
         photoUrl = await ref.getDownloadURL();
+      }
+      if (photoUrl == null) {
+        await ref.delete();
+        await UserCache.clearPhoto();
       }
       final newEmail = _emailController.text;
       if (newEmail != _originalEmail) {
         final currentPass = await _askCurrentPassword();
         if (currentPass == null || currentPass.isEmpty) {
-          setState(() {
-            _isLoading = false;
-          });
+          _isSaving = false;
           return;
         }
         final credential = EmailAuthProvider.credential(
@@ -384,9 +373,16 @@ class _EditProfileState extends State<EditProfile> {
         'name': _nameController.text.trim(),
         'email': newEmail,
         'phone': _phoneController.text.replaceAll(RegExp(r'\D'), ''),
-        if (photoUrl != null) 'photoUrl': photoUrl,
+        'photoUrl': photoUrl,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+      await UserCache.save(
+        uid: user.uid,
+        name: _nameController.text.trim(),
+        email: newEmail,
+        phone: _phoneController.text.replaceAll(RegExp(r'\D'), ''),
+        photoUrl: photoUrl,
+      );
       if (mounted) {
         messenger.showSnackBar(
           const SnackBar(content: Text('Perfil atualizado com sucesso!')),

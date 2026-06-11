@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:the_fellows_run/screens/signup.dart';
+import '../services/user_cache.dart';
 import 'home.dart';
 
 class Login extends StatefulWidget {
@@ -13,23 +15,38 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
   bool _obscurePassword = true;
 
   void _login() async {
-    final messager = ScaffoldMessenger.of(context);
-    final navigator = Navigator.of(context);
+    _isLoading = true;
     String email = _emailController.text;
     String password = _passwordController.text;
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      navigator.pushReplacement(
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      _loadData(user.user!.uid);
+      _isLoading = false;
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const HomePage())
       );
-    } on FirebaseAuthException catch (error) {
-      messager.showSnackBar(
-        SnackBar(content: Text("${error.message} - ${error.code}"))
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("$error"))
       );
+      _isLoading = false;
     }
+  }
+
+  void _loadData(String uid) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final userData = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    UserCache.save(
+      uid: uid!,
+      name: userData['name'] ?? '', 
+      email: userData['email'] ?? '', 
+      phone: userData['phone'] ?? '',
+      photoUrl: userData['photoUrl'],
+    );
   }
 
   @override
@@ -159,7 +176,7 @@ class _LoginState extends State<Login> {
 
               // Botão Entrar
               ElevatedButton(
-                onPressed: () async {
+                onPressed: _isLoading ? null : () async {
                   _login();
                 },
                 child: const Row(

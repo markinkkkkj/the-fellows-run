@@ -119,52 +119,55 @@ class _CameraState extends State<Camera> {
         backgroundColor: theme.primary,
         iconTheme: IconThemeData(color: theme.onPrimary),
       ),
-      body: Column(
-        children: [
-          Expanded(child: CameraPreview(_controller!)),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            color: Colors.black,
-            child: Center(
-              child: GestureDetector(
-                onTap: _isTakingPicture ? null : _takePicture,
-                child: Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: theme.primary, width: 4),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _isTakingPicture
-                            ? theme.primary.withOpacity(0.5)
-                            : theme.primary,
-                      ),
-                      child: _isTakingPicture
-                          ? const Center(
-                              child: SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: Colors.black,
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Expanded(child: CameraPreview(_controller!)),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              color: Colors.black,
+              child: Center(
+                child: GestureDetector(
+                  onTap: _isTakingPicture ? null : _takePicture,
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: theme.primary, width: 4),
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _isTakingPicture
+                              ? theme.primary.withOpacity(0.5)
+                              : theme.primary,
+                        ),
+                        child: _isTakingPicture
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.black,
+                                  ),
                                 ),
-                              ),
-                            )
-                          : null,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 }
