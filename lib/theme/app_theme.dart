@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppColors {
-  // Marca
-  static const primary = Color(0xFFC6FF3D);
-  static const darkBg = Color(0xFF121212);
-  static const lightBg = Color(0xFFFAFAFA);
+import 'app_colors.dart';
 
-  // Semântico
-  static const success = Color(0xFF22C55E);
-  static const alert = Color(0xFFF59E0B);
-  static const error = Color(0xFFEF4444);
-
-  // Superfícies (dark)
-  static const card = Color(0xFF1C1C1C);
-  static const secondary = Color(0xFF252525);
-  static const mutedFg = Color(0xFF777777);
-}
+// Reexporta as cores para que `import 'app_theme.dart'` continue dando
+// acesso a AppColors em toda a aplicação.
+export 'app_colors.dart';
 
 class AppTheme {
   static ThemeData dark() {
@@ -54,11 +43,11 @@ class AppTheme {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

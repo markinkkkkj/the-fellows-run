@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:the_fellows_run/screens/signup.dart';
 import '../services/user_cache.dart';
-import 'home.dart';
+import 'home/home_page.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
