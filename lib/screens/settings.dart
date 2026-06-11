@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_fellows_run/screens/edit_profile.dart';
 import 'package:the_fellows_run/screens/login.dart';
+import 'package:the_fellows_run/services/user_cache.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -24,19 +24,12 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> _loadUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      final data = doc.data();
-      if (data != null && mounted) {
+    final data = await UserCache.load();
+      if (mounted) {
         setState(() {
           _name = data['name'] ?? 'Sem nome';
-          _email = data['email'] ?? user.email ?? '';
+          _email = data['email'] ?? '';
           _photoUrl = data['photoUrl'];
         });
       }
@@ -58,6 +51,7 @@ class _SettingsState extends State<Settings> {
     final navigator = Navigator.of(context);
     try {
       await FirebaseAuth.instance.signOut();
+      UserCache.clear();
       navigator.pushReplacement(
         MaterialPageRoute(builder: (context) => Login())
       );
@@ -74,7 +68,6 @@ class _SettingsState extends State<Settings> {
       context,
       MaterialPageRoute(builder: (context) => const EditProfile()),
     );
-    // ao voltar, recarrega os dados (caso tenham sido alterados)
     await _loadUserData();
   }
 
@@ -121,7 +114,6 @@ class _SettingsState extends State<Settings> {
                     ),
                     child: Row(
                       children: [
-                        // avatar com foto ou iniciais
                         Container(
                           width: 60,
                           height: 60,

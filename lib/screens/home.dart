@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_fellows_run/screens/run_details.dart';
 import '../theme/app_theme.dart';
 import 'settings.dart';
 
@@ -57,27 +58,40 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(width: 8),
           ],
-          bottom: const TabBar(
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.mutedFg,
-            indicatorColor: AppColors.primary,
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.label,
-            dividerColor: Color(0xFF222222),
-            labelStyle: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            unselectedLabelStyle:
-                TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-            tabs: [
-              Tab(text: 'Próximas'),
-              Tab(text: 'Percorridas'),
-            ],
+          // TabBar numa faixa escura abaixo do header verde, para que a label
+          // ativa e o indicador verde-limão tenham contraste (verde sobre verde
+          // ficava invisível).
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Container(
+              color: AppColors.darkBg,
+              child: const TabBar(
+                labelColor: AppColors.primary,
+                unselectedLabelColor: AppColors.mutedFg,
+                indicatorColor: AppColors.primary,
+                indicatorWeight: 3,
+                indicatorSize: TabBarIndicatorSize.label,
+                dividerColor: Color(0xFF222222),
+                labelStyle:
+                    TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                unselectedLabelStyle:
+                    TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                tabs: [
+                  Tab(text: 'Próximas'),
+                  Tab(text: 'Percorridas'),
+                ],
+              ),
+            ),
           ),
         ),
-        body: const TabBarView(
-          children: [
-            _UpcomingTab(),
-            _CompletedTab(),
-          ],
+        body: const SafeArea(
+          top: false,
+          child: TabBarView(
+            children: [
+              _UpcomingTab(),
+              _CompletedTab(),
+            ],
+          ),
         ),
       ),
     );
@@ -121,7 +135,7 @@ class _UpcomingTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        const _RunCard(
+        _RunCard(
           dia: '14',
           mes: 'JUN',
           titulo: 'Corrida da Lagoa',
@@ -129,7 +143,13 @@ class _UpcomingTab extends StatelessWidget {
           local: 'Lagoa Rodrigo de Freitas',
           km: '5 km',
           statusTipo: _StatusTipo.inscrito,
-          statusTexto: 'Inscrito · Meta 5km',
+          statusTexto: 'Inscrito · Meta 5km',  
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RunDetails()),
+            );
+          },
         ),
         const SizedBox(height: 12),
         const _RunCard(
@@ -401,6 +421,7 @@ class _RunCard extends StatelessWidget {
   final String km;
   final _StatusTipo statusTipo;
   final String statusTexto;
+  final VoidCallback? onTap;
 
   const _RunCard({
     required this.dia,
@@ -411,6 +432,7 @@ class _RunCard extends StatelessWidget {
     required this.km,
     required this.statusTipo,
     required this.statusTexto,
+    this.onTap, 
   });
 
   @override
@@ -419,7 +441,7 @@ class _RunCard extends StatelessWidget {
       color: AppColors.card,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(16),
