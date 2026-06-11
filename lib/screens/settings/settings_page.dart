@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:the_fellows_run/screens/edit_profile.dart';
+
+import 'package:the_fellows_run/screens/edit_profile/edit_profile_page.dart';
 import 'package:the_fellows_run/screens/login.dart';
 import 'package:the_fellows_run/services/user_cache.dart';
+import 'package:the_fellows_run/theme/app_colors.dart';
+
+import 'widgets/settings_tiles.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -109,7 +113,7 @@ class _SettingsState extends State<Settings> {
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C1C1C),
+                      color: AppColors.card,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -159,7 +163,7 @@ class _SettingsState extends State<Settings> {
                                 _email ?? '',
                                 style: const TextStyle(
                                   fontSize: 13,
-                                  color: Color(0xFF777777),
+                                  color: AppColors.mutedFg,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -172,13 +176,13 @@ class _SettingsState extends State<Settings> {
                 ),
 
                 // ─── SEÇÃO: CONTA ───────────────────────────
-                const _SectionTitle('Conta'),
-                _SettingsTile(
+                const SectionTitle('Conta'),
+                SettingsTile(
                   icon: Icons.person_outline,
                   label: 'Editar perfil',
                   onTap: _openEditProfile,
                 ),
-                _SettingsTile(
+                SettingsTile(
                   icon: Icons.notifications_outlined,
                   label: 'Notificações',
                   onTap: () {},
@@ -187,13 +191,13 @@ class _SettingsState extends State<Settings> {
                 const SizedBox(height: 24),
 
                 // ─── SEÇÃO: SOBRE ───────────────────────────
-                const _SectionTitle('Sobre'),
-                _SettingsTile(
+                const SectionTitle('Sobre'),
+                SettingsTile(
                   icon: Icons.info_outline,
                   label: 'Sobre o app',
                   onTap: () {},
                 ),
-                _SettingsTile(
+                SettingsTile(
                   icon: Icons.help_outline,
                   label: 'Ajuda',
                   onTap: () {},
@@ -206,18 +210,18 @@ class _SettingsState extends State<Settings> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: OutlinedButton.icon(
                     onPressed: _signOut,
-                    icon: const Icon(Icons.logout, color: Color(0xFFEF4444)),
+                    icon: const Icon(Icons.logout, color: AppColors.error),
                     label: const Text(
                       'Sair da conta',
                       style: TextStyle(
-                        color: Color(0xFFEF4444),
+                        color: AppColors.error,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(54),
                       side: const BorderSide(
-                        color: Color(0xFFEF4444),
+                        color: AppColors.error,
                         width: 1.5,
                       ),
                       shape: RoundedRectangleBorder(
@@ -228,73 +232,6 @@ class _SettingsState extends State<Settings> {
                 ),
               ],
             ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String text;
-  const _SectionTitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-      child: Text(
-        text.toUpperCase(),
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF777777),
-          letterSpacing: 1.2,
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          child: Row(
-            children: [
-              Icon(icon, color: Colors.white.withOpacity(0.7), size: 22),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right,
-                color: Color(0xFF777777),
-                size: 22,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

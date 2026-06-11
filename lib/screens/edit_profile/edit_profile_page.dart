@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:the_fellows_run/screens/camera.dart';
+import 'package:the_fellows_run/screens/edit_profile/widgets/photo_source_tile.dart';
 import 'package:the_fellows_run/services/user_cache.dart';
+import 'package:the_fellows_run/theme/app_colors.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -58,7 +60,7 @@ class _EditProfileState extends State<EditProfile> {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1C),
+        backgroundColor: AppColors.card,
         title: Text('Confirme sua senha', style: TextStyle(color: theme.onSurface)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -102,7 +104,7 @@ class _EditProfileState extends State<EditProfile> {
     final shouldChange = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1C),
+        backgroundColor: AppColors.card,
         title: Text('Nova senha', style: TextStyle(color: theme.onSurface)),
         content: Form(
           key: formKey,
@@ -179,7 +181,7 @@ class _EditProfileState extends State<EditProfile> {
 
     final source = await showModalBottomSheet<_PhotoSource>(
       context: context,
-      backgroundColor: const Color(0xFF1C1C1C),
+      backgroundColor: AppColors.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -207,21 +209,21 @@ class _EditProfileState extends State<EditProfile> {
                 ),
               ),
               const SizedBox(height: 20),
-              _PhotoSourceTile(
+              PhotoSourceTile(
                 icon: Icons.camera_alt_outlined,
                 label: 'Tirar foto com a câmera',
                 onTap: () => Navigator.pop(context, _PhotoSource.camera),
               ),
-              _PhotoSourceTile(
+              PhotoSourceTile(
                 icon: Icons.photo_library_outlined,
                 label: 'Escolher da galeria',
                 onTap: () => Navigator.pop(context, _PhotoSource.gallery),
               ),
               if (_photoUrl != null || _newPhotoFile != null)
-                _PhotoSourceTile(
+                PhotoSourceTile(
                   icon: Icons.delete_outline,
                   label: 'Remover foto atual',
-                  color: const Color(0xFFEF4444),
+                  color: AppColors.error,
                   onTap: () => Navigator.pop(context, _PhotoSource.remove),
                 ),
               const SizedBox(height: 8),
@@ -320,7 +322,7 @@ class _EditProfileState extends State<EditProfile> {
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF777777),
+          color: AppColors.mutedFg,
           letterSpacing: 1.2,
         ),
       ),
@@ -480,7 +482,7 @@ class _EditProfileState extends State<EditProfile> {
                               color: theme.primary,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFF121212),
+                                color: AppColors.darkBg,
                                 width: 3,
                               ),
                             ),
@@ -601,46 +603,3 @@ class _EditProfileState extends State<EditProfile> {
 }
 
 enum _PhotoSource { camera, gallery, remove }
-
-class _PhotoSourceTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color? color;
-  final VoidCallback onTap;
-
-  const _PhotoSourceTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context).colorScheme;
-    final effectiveColor = color ?? theme.onSurface;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Icon(icon, color: effectiveColor, size: 22),
-              const SizedBox(width: 16),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: effectiveColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
