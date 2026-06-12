@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_fellows_run/models/user.dart';
 
 import 'package:the_fellows_run/screens/edit_profile/edit_profile_page.dart';
 import 'package:the_fellows_run/screens/login.dart';
@@ -17,9 +18,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  String? _name;
-  String? _email;
-  String? _photoUrl;
+  AppUser? _user;
   bool _isLoading = true;
 
   @override
@@ -32,11 +31,7 @@ class _SettingsState extends State<Settings> {
     try {
     final data = await UserCache.load();
       if (mounted) {
-        setState(() {
-          _name = data['name'] ?? 'Sem nome';
-          _email = data['email'] ?? '';
-          _photoUrl = data['photoUrl'];
-        });
+        setState(() => _user = AppUser.fromCache(data));
       }
     } catch (error) {
       if (mounted) {
@@ -77,7 +72,7 @@ class _SettingsState extends State<Settings> {
   }
 
   String _getInitials() {
-    final name = _name?.trim() ?? '';
+    final name = _user?.name.trim() ?? '';
     if (name.isEmpty) return '?';
     return name
         .split(' ')
@@ -125,14 +120,14 @@ class _SettingsState extends State<Settings> {
                           decoration: BoxDecoration(
                             color: theme.primary,
                             shape: BoxShape.circle,
-                            image: (_photoUrl != null && _photoUrl!.isNotEmpty)
+                            image: (_user!.photoUrl != null && _user!.photoUrl!.isNotEmpty)
                                 ? DecorationImage(
-                                    image: CachedNetworkImageProvider(_photoUrl!),
+                                    image: CachedNetworkImageProvider(_user!.photoUrl!),
                                     fit: BoxFit.cover,
                                   )
                                 : null,
                           ),
-                          child: (_photoUrl == null || _photoUrl!.isEmpty)
+                          child: (_user!.photoUrl == null || _user!.photoUrl!.isEmpty)
                               ? Center(
                                   child: Text(
                                     _getInitials(),
@@ -151,7 +146,7 @@ class _SettingsState extends State<Settings> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _name ?? '',
+                                _user?.name ?? '',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
@@ -161,7 +156,7 @@ class _SettingsState extends State<Settings> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                _email ?? '',
+                                _user?.email ?? '',
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.mutedFg,
