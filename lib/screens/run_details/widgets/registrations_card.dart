@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 
 /// Card de inscrições (deadline + status) na tela de detalhes.
-class InscricoesCard extends StatelessWidget {
-  const InscricoesCard({super.key});
+class RegistrationsCard extends StatelessWidget {
+  const RegistrationsCard({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -6,8 +6,8 @@ import 'package:the_fellows_run/theme/app_colors.dart';
 // ESTADO A — NÃO INSCRITO
 // ═══════════════════════════════════════════════════════════════
 
-class EstadoNaoInscrito extends StatelessWidget {
-  const EstadoNaoInscrito({super.key});
+class NotRegisteredState extends StatelessWidget {
+  const NotRegisteredState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class EstadoNaoInscrito extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _LabelEstado(texto: 'ESTADO A · NÃO INSCRITO'),
+          const _StateLabel(text: 'ESTADO A · NÃO INSCRITO'),
           const SizedBox(height: 12),
           const Text(
             'Você ainda não está inscrito',
@@ -58,8 +58,8 @@ class EstadoNaoInscrito extends StatelessWidget {
 // ESTADO B — INSCRITO
 // ═══════════════════════════════════════════════════════════════
 
-class EstadoInscrito extends StatelessWidget {
-  const EstadoInscrito({super.key});
+class RegisteredState extends StatelessWidget {
+  const RegisteredState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class EstadoInscrito extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const _LabelEstado(texto: 'ESTADO B · INSCRITO'),
+              const _StateLabel(text: 'ESTADO B · INSCRITO'),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -190,9 +190,9 @@ class EstadoInscrito extends StatelessWidget {
   }
 }
 
-class _LabelEstado extends StatelessWidget {
-  final String texto;
-  const _LabelEstado({required this.texto});
+class _StateLabel extends StatelessWidget {
+  final String text;
+  const _StateLabel({required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +209,7 @@ class _LabelEstado extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          texto,
+          text,
           style: const TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,

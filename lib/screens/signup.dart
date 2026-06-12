@@ -209,11 +209,11 @@ class _SignupState extends State<Signup> {
                   inputFormatters: [_phoneMask],
                   decoration: const InputDecoration(hintText: 'WhatsApp'),
                   validator: (value) {
-                    final apenasNumeros = value?.replaceAll(RegExp(r'\D'), '') ?? '';
-                    if (apenasNumeros.isEmpty) {
+                    final digitsOnly = value?.replaceAll(RegExp(r'\D'), '') ?? '';
+                    if (digitsOnly.isEmpty) {
                       return 'Informe seu WhatsApp';
                     }
-                    if (apenasNumeros.length != 11) {
+                    if (digitsOnly.length != 11) {
                       return 'Número inválido. Ex: (11) 98765-4321';
                     }
                     return null;

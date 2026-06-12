@@ -4,19 +4,19 @@ import 'package:the_fellows_run/theme/app_colors.dart';
 
 /// Card de corrida concluída exibido na aba "Percorridas".
 class CompletedCard extends StatelessWidget {
-  final String titulo;
-  final String subtitulo;
-  final String data;
+  final String title;
+  final String subtitle;
+  final String date;
   final String km;
-  final bool metaBatida;
+  final bool goalReached;
 
   const CompletedCard({
     super.key,
-    required this.titulo,
-    required this.subtitulo,
-    required this.data,
+    required this.title,
+    required this.subtitle,
+    required this.date,
     required this.km,
-    required this.metaBatida,
+    required this.goalReached,
   });
 
   @override
@@ -50,7 +50,7 @@ class CompletedCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  titulo,
+                  title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -59,7 +59,7 @@ class CompletedCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  subtitulo,
+                  subtitle,
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.mutedFg,
@@ -67,7 +67,7 @@ class CompletedCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  data,
+                  date,
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.mutedFg,
@@ -90,7 +90,7 @@ class CompletedCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              if (metaBatida)
+              if (goalReached)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [

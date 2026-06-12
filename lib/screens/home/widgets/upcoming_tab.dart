@@ -4,7 +4,7 @@ import 'package:the_fellows_run/screens/run_details/run_details_page.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 
 import 'run_card.dart';
-import 'ver_mais_button.dart';
+import 'see_more_button.dart';
 
 /// Aba "Próximas" da home.
 class UpcomingTab extends StatelessWidget {
@@ -41,14 +41,14 @@ class UpcomingTab extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         RunCard(
-          dia: '14',
-          mes: 'JUN',
-          titulo: 'Corrida da Lagoa',
-          horario: '07:00',
-          local: 'Lagoa Rodrigo de Freitas',
+          day: '14',
+          month: 'JUN',
+          title: 'Corrida da Lagoa',
+          time: '07:00',
+          location: 'Lagoa Rodrigo de Freitas',
           km: '5 km',
-          statusTipo: StatusTipo.inscrito,
-          statusTexto: 'Inscrito · Meta 5km',
+          statusType: StatusType.registered,
+          statusText: 'Inscrito · Meta 5km',
           onTap: () {
             Navigator.push(
               context,
@@ -58,28 +58,28 @@ class UpcomingTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const RunCard(
-          dia: '19',
-          mes: 'JUN',
-          titulo: 'Corrida Ipanema',
-          horario: '06:30',
-          local: 'Praia de Ipanema',
+          day: '19',
+          month: 'JUN',
+          title: 'Corrida Ipanema',
+          time: '06:30',
+          location: 'Praia de Ipanema',
           km: '10 km',
-          statusTipo: StatusTipo.deadline,
-          statusTexto: 'Deadline próximo',
+          statusType: StatusType.deadline,
+          statusText: 'Deadline próximo',
         ),
         const SizedBox(height: 12),
         const RunCard(
-          dia: '28',
-          mes: 'JUN',
-          titulo: 'Corrida do Parque',
-          horario: '07:30',
-          local: 'Parque Lage',
+          day: '28',
+          month: 'JUN',
+          title: 'Corrida do Parque',
+          time: '07:30',
+          location: 'Parque Lage',
           km: '8 km',
-          statusTipo: StatusTipo.naoInscrito,
-          statusTexto: 'Não inscrito',
+          statusType: StatusType.notRegistered,
+          statusText: 'Não inscrito',
         ),
         const SizedBox(height: 20),
-        const VerMaisButton(),
+        const SeeMoreButton(),
       ],
     );
   }

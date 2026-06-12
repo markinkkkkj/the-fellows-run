@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
 
-import 'widgets/estado_inscricao.dart';
-import 'widgets/inscricoes_card.dart';
-import 'widgets/participantes.dart';
+import 'widgets/registration_state.dart';
+import 'widgets/registrations_card.dart';
+import 'widgets/participants.dart';
 import 'widgets/run_hero.dart';
 
 class RunDetails extends StatefulWidget {
@@ -18,7 +18,7 @@ class _RunDetailsState extends State<RunDetails> {
   // Mock — trocar por dados reais vindos do Firestore depois.
   // Quando conectar, use isto pra escolher entre o estado A e o B.
   // ignore: unused_field
-  final bool _inscrito = true;
+  final bool _isRegistered = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +46,15 @@ class _RunDetailsState extends State<RunDetails> {
           children: const [
             RunHero(),
             SizedBox(height: 24),
-            InscricoesCard(),
+            RegistrationsCard(),
             SizedBox(height: 16),
             // ── Estado A: usuário NÃO inscrito ──
-            EstadoNaoInscrito(),
+            NotRegisteredState(),
             SizedBox(height: 16),
             // ── Estado B: usuário INSCRITO ──
-            EstadoInscrito(),
+            RegisteredState(),
             SizedBox(height: 24),
-            Participantes(),
+            Participants(),
           ],
         ),
       ),

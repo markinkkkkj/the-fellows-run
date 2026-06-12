@@ -5,9 +5,9 @@ import 'package:the_fellows_run/theme/app_colors.dart';
 /// Card de estatísticas (histórico geral) da aba "Percorridas".
 class StatsCard extends StatelessWidget {
   final String totalKm;
-  final String corridas;
+  final String runs;
 
-  const StatsCard({super.key, required this.totalKm, required this.corridas});
+  const StatsCard({super.key, required this.totalKm, required this.runs});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class StatsCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _StatItem(valor: totalKm, label: 'km percorridos'),
+                child: _StatItem(value: totalKm, label: 'km percorridos'),
               ),
               Container(
                 width: 1,
@@ -47,7 +47,7 @@ class StatsCard extends StatelessWidget {
                 color: Colors.white.withOpacity(0.1),
               ),
               Expanded(
-                child: _StatItem(valor: corridas, label: 'corridas'),
+                child: _StatItem(value: runs, label: 'corridas'),
               ),
             ],
           ),
@@ -58,17 +58,17 @@ class StatsCard extends StatelessWidget {
 }
 
 class _StatItem extends StatelessWidget {
-  final String valor;
+  final String value;
   final String label;
 
-  const _StatItem({required this.valor, required this.label});
+  const _StatItem({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
-          valor,
+          value,
           style: const TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w800,
