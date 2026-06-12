@@ -8,7 +8,6 @@ import 'package:the_fellows_run/widgets/auth/auth_submit_button.dart';
 import 'package:the_fellows_run/widgets/auth/auth_switch_link.dart';
 import 'package:the_fellows_run/widgets/auth/password_field.dart';
 import '../services/user_cache.dart';
-import 'home/home_page.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -30,9 +29,8 @@ class _LoginState extends State<Login> {
       final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       _loadData(user.user!.uid);
       _isLoading = false;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomePage())
-      );
+      // Sem navegação manual: o StreamBuilder de authStateChanges (app.dart)
+      // troca a raiz pra HomePage assim que o login é detectado.
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("$error"))
