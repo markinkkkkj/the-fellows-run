@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -284,7 +285,7 @@ class _EditProfileState extends State<EditProfile> {
       return DecorationImage(image: FileImage(_newPhotoFile!), fit: BoxFit.cover);
     }
     if (_photoUrl != null && _photoUrl!.isNotEmpty) {
-      return DecorationImage(image: NetworkImage(_photoUrl!), fit: BoxFit.cover);
+      return DecorationImage(image: CachedNetworkImageProvider(_photoUrl!), fit: BoxFit.cover);
     }
     return null;
   }
