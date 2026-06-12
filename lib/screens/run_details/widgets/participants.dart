@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/models/registration.dart';
@@ -61,6 +62,9 @@ class _ParticipantRow extends StatelessWidget {
 
   const _ParticipantRow({required this.registration, this.isYou = false});
 
+  bool get _hasPhoto =>
+      registration.photoUrl != null && registration.photoUrl!.isNotEmpty;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -74,7 +78,7 @@ class _ParticipantRow extends StatelessWidget {
           : null,
       child: Row(
         children: [
-          // Avatar com iniciais
+          // Avatar: foto se houver, senão iniciais
           Container(
             width: 40,
             height: 40,
@@ -84,15 +88,23 @@ class _ParticipantRow extends StatelessWidget {
                   ? AppColors.primary.withOpacity(0.15)
                   : AppColors.secondary,
               shape: BoxShape.circle,
+              image: _hasPhoto
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(registration.photoUrl!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: Text(
-              registration.initials,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: isYou ? AppColors.primary : AppColors.mutedFg,
-              ),
-            ),
+            child: _hasPhoto
+                ? null
+                : Text(
+                    registration.initials,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: isYou ? AppColors.primary : AppColors.mutedFg,
+                    ),
+                  ),
           ),
           const SizedBox(width: 12),
           // Nome (+ tag "você")
