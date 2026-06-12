@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:the_fellows_run/models/user.dart';
 
 import 'package:the_fellows_run/screens/edit_profile/edit_profile_page.dart';
-import 'package:the_fellows_run/screens/login.dart';
 import 'package:the_fellows_run/services/user_cache.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 
@@ -51,11 +50,10 @@ class _SettingsState extends State<Settings> {
     final navigator = Navigator.of(context);
     try {
       await FirebaseAuth.instance.signOut();
-      UserCache.clear();
-      navigator.pushReplacement(
-        MaterialPageRoute(builder: (context) => Login())
-      );
-      navigator.pop();
+      await UserCache.clear();
+      // O StreamBuilder de authStateChanges (app.dart) já troca a raiz pra
+      // Login; aqui só desempilhamos tudo até ela ficar visível.
+      navigator.popUntil((route) => route.isFirst);
     } on FirebaseAuthException catch (error) {
       messenger.showSnackBar(
         SnackBar(content: Text(error.message ?? 'Erro ao sair')),
