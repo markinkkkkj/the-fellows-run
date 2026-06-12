@@ -3,6 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
+import 'package:the_fellows_run/models/user.dart';
+import 'package:the_fellows_run/widgets/app_text_field.dart';
+import 'package:the_fellows_run/widgets/auth/auth_submit_button.dart';
+import 'package:the_fellows_run/widgets/auth/auth_switch_link.dart';
+import 'package:the_fellows_run/widgets/auth/password_field.dart';
+
 class Signup extends StatefulWidget {
   const Signup({super.key});
 
@@ -17,8 +23,6 @@ class _SignupState extends State<Signup> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   bool _acceptedTerms = false;
   final _phoneMask = MaskTextInputFormatter(
     mask: '(##) #####-####',
@@ -36,13 +40,17 @@ class _SignupState extends State<Signup> {
           email: _emailController.text, 
           password: _passwordController.text
         );
+        final profile = AppUser(
+          uid: user.user!.uid,
+          name: _nameController.text,
+          email: _emailController.text,
+          phone: _phoneController.text.replaceAll(RegExp(r'\D'), ''),
+        );
         await FirebaseFirestore.instance
             .collection("users")
-            .doc(user.user!.uid)
+            .doc(profile.uid)
             .set({
-              'name': _nameController.text,
-              'email': _emailController.text,
-              'phone': _phoneController.text.replaceAll(RegExp(r'\D'), ''),
+              ...profile.toFirestore(),
               'createdAt': FieldValue.serverTimestamp(),
             });
         await FirebaseAuth.instance.signOut();
@@ -163,11 +171,10 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 24),
 
                 // Nome completo
-                TextFormField(
+                AppTextField(
                   controller: _nameController,
-                  style: TextStyle(color: theme.onSurface),
+                  hintText: 'Nome completo',
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(hintText: 'Nome completo'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Informe seu nome completo';
@@ -181,12 +188,11 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 14),
 
                 // E-mail
-                TextFormField(
+                AppTextField(
                   controller: _emailController,
-                  style: TextStyle(color: theme.onSurface),
+                  hintText: 'E-mail',
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(hintText: 'E-mail'),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Informe seu e-mail';
@@ -202,12 +208,11 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 14),
 
                 // Número de WhatsApp
-                TextFormField(
+                AppTextField(
                   controller: _phoneController,
-                  style: TextStyle(color: theme.onSurface),
+                  hintText: 'WhatsApp',
                   keyboardType: TextInputType.phone,
                   inputFormatters: [_phoneMask],
-                  decoration: const InputDecoration(hintText: 'WhatsApp'),
                   validator: (value) {
                     final digitsOnly = value?.replaceAll(RegExp(r'\D'), '') ?? '';
                     if (digitsOnly.isEmpty) {
@@ -222,25 +227,9 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 14),
 
                 // Senha
-                TextFormField(
+                PasswordField(
                   controller: _passwordController,
-                  style: TextStyle(color: theme.onSurface),
-                  obscureText: _obscurePassword,
                   textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    hintText: 'Senha',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        //color: theme.mutedFg,
-                      ),
-                      onPressed: () {
-                        setState(() => _obscurePassword = !_obscurePassword);
-                      },
-                    ),
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Informe uma senha';
@@ -254,26 +243,10 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 14),
 
                 // Confirmar senha
-                TextFormField(
+                PasswordField(
                   controller: _confirmPasswordController,
-                  style: TextStyle(color: theme.onSurface),
-                  obscureText: _obscureConfirmPassword,
+                  hintText: 'Confirmar senha',
                   textInputAction: TextInputAction.done,
-                  decoration: InputDecoration(
-                    hintText: 'Confirmar senha',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        //color: theme.mutedFg,
-                      ),
-                      onPressed: () {
-                        setState(() =>
-                            _obscureConfirmPassword = !_obscureConfirmPassword);
-                      },
-                    ),
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Confirme sua senha';
@@ -344,40 +317,17 @@ class _SignupState extends State<Signup> {
                 const SizedBox(height: 24),
 
                 // Botão Continuar
-                ElevatedButton(
+                AuthSubmitButton(
+                  label: 'Continuar',
                   onPressed: _createAccount,
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Continuar'),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward, size: 18),
-                    ],
-                  ),
                 ),
                 const SizedBox(height: 16),
 
                 // Link pra voltar pro login
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Já tem conta?  ',
-                        style: TextStyle(color: theme.onSurface.withOpacity(0.6)),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Text(
-                          'Entrar',
-                          style: TextStyle(
-                            color: theme.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                AuthSwitchLink(
+                  question: 'Já tem conta?  ',
+                  action: 'Entrar',
+                  onTap: () => Navigator.pop(context),
                 ),
                 const SizedBox(height: 24),
               ],
