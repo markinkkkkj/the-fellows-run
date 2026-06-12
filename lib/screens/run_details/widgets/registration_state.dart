@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/app_card.dart';
+import 'package:the_fellows_run/widgets/section_label.dart';
+import 'package:the_fellows_run/widgets/status_badge.dart';
 
 // ═══════════════════════════════════════════════════════════════
 // ESTADO A — NÃO INSCRITO
@@ -11,16 +14,12 @@ class NotRegisteredState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _StateLabel(text: 'ESTADO A · NÃO INSCRITO'),
+          const SectionLabel(text: 'ESTADO A · NÃO INSCRITO', dot: true),
           const SizedBox(height: 12),
           const Text(
             'Você ainda não está inscrito',
@@ -63,54 +62,27 @@ class RegisteredState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const _StateLabel(text: 'ESTADO B · INSCRITO'),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.success,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.check, size: 13, color: Colors.black),
-                    SizedBox(width: 3),
-                    Text(
-                      'Inscrito',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
+            children: const [
+              SectionLabel(text: 'ESTADO B · INSCRITO', dot: true),
+              StatusBadge(
+                text: 'Inscrito',
+                background: AppColors.success,
+                foreground: Colors.black,
+                icon: Icons.check,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                fontSize: 12,
               ),
             ],
           ),
           const SizedBox(height: 14),
-          const Text(
-            'SUA META',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.mutedFg,
-              letterSpacing: 1.2,
-            ),
-          ),
+          const SectionLabel(text: 'SUA META'),
           const SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -190,34 +162,3 @@ class RegisteredState extends StatelessWidget {
   }
 }
 
-class _StateLabel extends StatelessWidget {
-  final String text;
-  const _StateLabel({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 7,
-          height: 7,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.mutedFg,
-            letterSpacing: 1.2,
-          ),
-        ),
-      ],
-    );
-  }
-}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/app_card.dart';
 
 /// Card de corrida concluída exibido na aba "Percorridas".
 class CompletedCard extends StatelessWidget {
@@ -21,12 +22,8 @@ class CompletedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(20),
-      ),
+    return AppCard(
+      radius: 20,
       child: Row(
         children: [
           // Troféu (contorno)
