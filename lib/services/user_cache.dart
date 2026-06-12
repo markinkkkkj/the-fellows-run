@@ -1,35 +1,23 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserCache {
-  static const _uid = 'cache_uid';
-  static const _name = 'cache_name';
-  static const _email = 'cache_email';
-  static const _phone = 'cache_phone';
-  static const _photoUrl = 'cache_photoUrl';
-  
-  static Future<void> save({
-    required String uid,
-    required String name,
-    required String email,
-    required String phone,
-    String? photoUrl,
-  }) async {
+  static const _prefix = 'cache_';
+  static const _fields = ['uid', 'name', 'email', 'phone', 'photoUrl', 'role'];
+
+  /// Persiste os campos do usuário. Campos nulos não são gravados.
+  /// Use [AppUser.toCacheMap] pra montar o [data].
+  static Future<void> save(Map<String, String?> data) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_uid, uid);
-    await prefs.setString(_name, name);
-    await prefs.setString(_email, email);
-    await prefs.setString(_phone, phone);
-    if (photoUrl != null) await prefs.setString(_photoUrl, photoUrl);
+    for (final field in _fields) {
+      final value = data[field];
+      if (value != null) await prefs.setString('$_prefix$field', value);
+    }
   }
 
   static Future<Map<String, String?>> load() async {
     final prefs = await SharedPreferences.getInstance();
     return {
-      'uid': prefs.getString(_uid),
-      'name': prefs.getString(_name),
-      'email': prefs.getString(_email),
-      'phone': prefs.getString(_phone),
-      'photoUrl': prefs.getString(_photoUrl),
+      for (final field in _fields) field: prefs.getString('$_prefix$field'),
     };
   }
 
@@ -37,9 +25,9 @@ class UserCache {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
-  
+
   static Future<void> clearPhoto() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_photoUrl);
+    await prefs.remove('${_prefix}photoUrl');
   }
 }
