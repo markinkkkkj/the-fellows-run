@@ -10,7 +10,9 @@ import 'package:the_fellows_run/widgets/status_badge.dart';
 // ═══════════════════════════════════════════════════════════════
 
 class NotRegisteredState extends StatelessWidget {
-  const NotRegisteredState({super.key});
+  final VoidCallback onRegister;
+
+  const NotRegisteredState({super.key, required this.onRegister});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,6 @@ class NotRegisteredState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionLabel(text: 'ESTADO A · NÃO INSCRITO', dot: true),
-          const SizedBox(height: 12),
           const Text(
             'Você ainda não está inscrito',
             style: TextStyle(
@@ -31,8 +31,8 @@ class NotRegisteredState extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           const Text(
-            'Inscreva-se e defina uma meta pessoal de distância para '
-            'participar desta corrida com o grupo.',
+            'Inscreva-se para participar desta corrida com o grupo. '
+            'Sua meta começa na distância da corrida e pode ser ajustada depois.',
             style: TextStyle(
               fontSize: 14,
               color: AppColors.mutedFg,
@@ -43,7 +43,7 @@ class NotRegisteredState extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onRegister,
               child: const Text('Inscrever-se na corrida'),
             ),
           ),
@@ -58,10 +58,21 @@ class NotRegisteredState extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════
 
 class RegisteredState extends StatelessWidget {
-  const RegisteredState({super.key});
+  final num goal;
+  final VoidCallback onEditGoal;
+  final VoidCallback onCancel;
+
+  const RegisteredState({
+    super.key,
+    required this.goal,
+    required this.onEditGoal,
+    required this.onCancel,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final goalKm = '${goal % 1 == 0 ? goal.toInt() : goal} km';
+
     return AppCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -70,7 +81,7 @@ class RegisteredState extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
-              SectionLabel(text: 'ESTADO B · INSCRITO', dot: true),
+              SectionLabel(text: 'SUA INSCRIÇÃO', dot: true),
               StatusBadge(
                 text: 'Inscrito',
                 background: AppColors.success,
@@ -87,10 +98,10 @@ class RegisteredState extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
-                  '5 km',
-                  style: TextStyle(
+                  goalKm,
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
                     color: AppColors.primary,
@@ -102,7 +113,7 @@ class RegisteredState extends StatelessWidget {
                 color: AppColors.secondary,
                 shape: const CircleBorder(),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: onEditGoal,
                   customBorder: const CircleBorder(),
                   child: const Padding(
                     padding: EdgeInsets.all(10),
@@ -123,7 +134,7 @@ class RegisteredState extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: onEditGoal,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.primary,
                 side: const BorderSide(color: AppColors.primary, width: 1.5),
@@ -144,7 +155,7 @@ class RegisteredState extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: TextButton(
-              onPressed: () {},
+              onPressed: onCancel,
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.error,
                 minimumSize: const Size.fromHeight(48),

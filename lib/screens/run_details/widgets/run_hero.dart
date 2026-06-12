@@ -1,49 +1,50 @@
 import 'package:flutter/material.dart';
 
+import 'package:the_fellows_run/models/run.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 
 /// Cabeçalho da tela de detalhes da corrida (título, infos e distância).
 class RunHero extends StatelessWidget {
-  const RunHero({super.key});
+  final Run run;
+  final num totalKm;
+
+  const RunHero({super.key, required this.run, required this.totalKm});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         Text(
-          'Corrida da Lagoa',
-          style: TextStyle(
+          run.title,
+          style: const TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
             color: Colors.white,
           ),
         ),
-        SizedBox(height: 16),
-        _InfoRow(icon: Icons.calendar_today, text: '14 de junho, 2026'),
-        SizedBox(height: 8),
-        _InfoRow(icon: Icons.access_time, text: '07:00 — largada na Lagoa'),
-        SizedBox(height: 8),
-        _InfoRow(
-          icon: Icons.place_outlined,
-          text: 'Lagoa Rodrigo de Freitas, Rio de Janeiro',
-        ),
-        SizedBox(height: 20),
+        const SizedBox(height: 16),
+        _InfoRow(icon: Icons.calendar_today, text: run.fullDate),
+        const SizedBox(height: 8),
+        _InfoRow(icon: Icons.access_time, text: run.time),
+        const SizedBox(height: 8),
+        _InfoRow(icon: Icons.place_outlined, text: run.location),
+        const SizedBox(height: 20),
         // Distância total
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              '5 km',
-              style: TextStyle(
+              Run.formatKm(totalKm),
+              style: const TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w800,
                 color: AppColors.primary,
                 height: 1,
               ),
             ),
-            SizedBox(width: 10),
-            Padding(
+            const SizedBox(width: 10),
+            const Padding(
               padding: EdgeInsets.only(bottom: 5),
               child: Text(
                 'DISTÂNCIA TOTAL',

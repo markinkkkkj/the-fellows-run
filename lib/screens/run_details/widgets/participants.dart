@@ -1,105 +1,72 @@
 import 'package:flutter/material.dart';
 
+import 'package:the_fellows_run/models/registration.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 import 'package:the_fellows_run/widgets/app_card.dart';
-import 'package:the_fellows_run/widgets/dotted_border.dart';
 import 'package:the_fellows_run/widgets/section_label.dart';
 import 'package:the_fellows_run/widgets/status_badge.dart';
 
 /// Lista de participantes da corrida na tela de detalhes.
 class Participants extends StatelessWidget {
-  const Participants({super.key});
+  final List<Registration> participants;
+  final String currentUid;
+
+  const Participants({
+    super.key,
+    required this.participants,
+    required this.currentUid,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SectionLabel(
-              text: 'PARTICIPANTES · 8',
-              icon: Icons.people_alt_outlined,
-              iconSize: 14,
-            ),
-            GestureDetector(
-              onTap: () {},
-              child: const Text(
-                'Ver todos',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ],
+        SectionLabel(
+          text: 'PARTICIPANTES · ${participants.length}',
+          icon: Icons.people_alt_outlined,
+          iconSize: 14,
         ),
         const SizedBox(height: 12),
         AppCard(
           padding: EdgeInsets.zero,
-          child: Column(
-            children: const [
-              _ParticipantRow(
-                initials: 'MF',
-                name: 'Mateus Ferreira',
-                goal: 'Meta 5 km',
-                isYou: true,
-              ),
-              _SubtleDivider(),
-              _ParticipantRow(
-                initials: 'JS',
-                name: 'João Silva',
-                goal: 'Meta 5 km',
-              ),
-              _SubtleDivider(),
-              _ParticipantRow(
-                initials: 'AC',
-                name: 'Ana Costa',
-                goal: 'Meta 10 km',
-              ),
-              _SubtleDivider(),
-              _ParticipantRow(
-                initials: 'RM',
-                name: 'Rafael Mendes',
-                goal: 'Meta 5 km',
-              ),
-              _SubtleDivider(),
-              _ParticipantRow(
-                initials: 'BL',
-                name: 'Beatriz Lima',
-                goal: 'Meta 8 km',
-              ),
-            ],
-          ),
+          child: participants.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Ninguém inscrito ainda. Seja o primeiro!',
+                    style: TextStyle(fontSize: 14, color: AppColors.mutedFg),
+                  ),
+                )
+              : Column(
+                  children: [
+                    for (var i = 0; i < participants.length; i++) ...[
+                      _ParticipantRow(
+                        registration: participants[i],
+                        isYou: participants[i].uid == currentUid,
+                      ),
+                      if (i < participants.length - 1) const _SubtleDivider(),
+                    ],
+                  ],
+                ),
         ),
-        const SizedBox(height: 16),
-        const _SeeMoreParticipants(),
       ],
     );
   }
 }
 
 class _ParticipantRow extends StatelessWidget {
-  final String initials;
-  final String name;
-  final String goal;
+  final Registration registration;
   final bool isYou;
 
-  const _ParticipantRow({
-    required this.initials,
-    required this.name,
-    required this.goal,
-    this.isYou = false,
-  });
+  const _ParticipantRow({required this.registration, this.isYou = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: isYou
-          ? BoxDecoration(
+          ? const BoxDecoration(
               border: Border(
                 left: BorderSide(color: AppColors.primary, width: 2),
               ),
@@ -119,7 +86,7 @@ class _ParticipantRow extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Text(
-              initials,
+              registration.initials,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -134,7 +101,7 @@ class _ParticipantRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    name,
+                    registration.name,
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -149,8 +116,7 @@ class _ParticipantRow extends StatelessWidget {
                     text: 'você',
                     background: AppColors.primary,
                     foreground: Colors.black,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     fontSize: 10,
                   ),
                 ],
@@ -159,7 +125,7 @@ class _ParticipantRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            goal,
+            registration.goalLabel,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -183,41 +149,6 @@ class _SubtleDivider extends StatelessWidget {
       indent: 16,
       endIndent: 16,
       color: Colors.white.withOpacity(0.06),
-    );
-  }
-}
-
-class _SeeMoreParticipants extends StatelessWidget {
-  const _SeeMoreParticipants();
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(16),
-        child: DottedBorder(
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Ver mais 3 participantes',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.mutedFg,
-                  ),
-                ),
-                SizedBox(width: 6),
-                Icon(Icons.chevron_right, color: AppColors.mutedFg, size: 18),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
