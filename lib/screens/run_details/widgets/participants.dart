@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/app_card.dart';
 import 'package:the_fellows_run/widgets/dotted_border.dart';
+import 'package:the_fellows_run/widgets/section_label.dart';
+import 'package:the_fellows_run/widgets/status_badge.dart';
 
 /// Lista de participantes da corrida na tela de detalhes.
 class Participants extends StatelessWidget {
@@ -15,21 +18,10 @@ class Participants extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: const [
-                Icon(Icons.people_alt_outlined,
-                    size: 14, color: AppColors.mutedFg),
-                SizedBox(width: 6),
-                Text(
-                  'PARTICIPANTES · 8',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.mutedFg,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ],
+            const SectionLabel(
+              text: 'PARTICIPANTES · 8',
+              icon: Icons.people_alt_outlined,
+              iconSize: 14,
             ),
             GestureDetector(
               onTap: () {},
@@ -45,11 +37,8 @@ class Participants extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.card,
-            borderRadius: BorderRadius.circular(16),
-          ),
+        AppCard(
+          padding: EdgeInsets.zero,
           child: Column(
             children: const [
               _ParticipantRow(
@@ -156,21 +145,13 @@ class _ParticipantRow extends StatelessWidget {
                 ),
                 if (isYou) ...[
                   const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'você',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ),
+                  const StatusBadge(
+                    text: 'você',
+                    background: AppColors.primary,
+                    foreground: Colors.black,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    fontSize: 10,
                   ),
                 ],
               ],

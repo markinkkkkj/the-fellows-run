@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/app_card.dart';
+import 'package:the_fellows_run/widgets/section_label.dart';
 
 /// Card de estatísticas (histórico geral) da aba "Percorridas".
 class StatsCard extends StatelessWidget {
@@ -11,29 +13,16 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      radius: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
-              Icon(Icons.show_chart, color: AppColors.primary, size: 16),
-              SizedBox(width: 6),
-              Text(
-                'HISTÓRICO GERAL',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.mutedFg,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ],
+          const SectionLabel(
+            text: 'HISTÓRICO GERAL',
+            icon: Icons.show_chart,
+            iconColor: AppColors.primary,
           ),
           const SizedBox(height: 16),
           Row(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/screens/run_details/run_details_page.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/section_label.dart';
 
 import 'run_card.dart';
 import 'see_more_button.dart';
@@ -19,15 +20,7 @@ class UpcomingTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
-            Text(
-              'JUNHO 2026',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppColors.mutedFg,
-                letterSpacing: 1.2,
-              ),
-            ),
+            SectionLabel(text: 'JUNHO 2026'),
             Text(
               '3 corridas',
               style: TextStyle(

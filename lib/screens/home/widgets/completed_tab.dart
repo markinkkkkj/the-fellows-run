@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/section_label.dart';
 
 import 'completed_card.dart';
 import 'stats_card.dart';
@@ -16,15 +16,7 @@ class CompletedTab extends StatelessWidget {
       children: const [
         StatsCard(totalKm: '25.5', runs: '3'),
         SizedBox(height: 20),
-        Text(
-          'ÚLTIMAS CORRIDAS',
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: AppColors.mutedFg,
-            letterSpacing: 1.2,
-          ),
-        ),
+        SectionLabel(text: 'ÚLTIMAS CORRIDAS'),
         SizedBox(height: 12),
         CompletedCard(
           title: 'Corrida da Lagoa',
