@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
 
-enum StatusTipo { inscrito, deadline, naoInscrito }
+enum StatusType { registered, deadline, notRegistered }
 
 /// Card de corrida exibido na aba "Próximas".
 class RunCard extends StatelessWidget {
-  final String dia;
-  final String mes;
-  final String titulo;
-  final String horario;
-  final String local;
+  final String day;
+  final String month;
+  final String title;
+  final String time;
+  final String location;
   final String km;
-  final StatusTipo statusTipo;
-  final String statusTexto;
+  final StatusType statusType;
+  final String statusText;
   final VoidCallback? onTap;
 
   const RunCard({
     super.key,
-    required this.dia,
-    required this.mes,
-    required this.titulo,
-    required this.horario,
-    required this.local,
+    required this.day,
+    required this.month,
+    required this.title,
+    required this.time,
+    required this.location,
     required this.km,
-    required this.statusTipo,
-    required this.statusTexto,
+    required this.statusType,
+    required this.statusText,
     this.onTap,
   });
 
@@ -48,7 +48,7 @@ class RunCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      dia,
+                      day,
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
@@ -58,7 +58,7 @@ class RunCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      mes,
+                      month,
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -80,7 +80,7 @@ class RunCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            titulo,
+                            title,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -105,7 +105,7 @@ class RunCard extends StatelessWidget {
                             size: 13, color: AppColors.mutedFg),
                         const SizedBox(width: 4),
                         Text(
-                          horario,
+                          time,
                           style: const TextStyle(
                             fontSize: 13,
                             color: AppColors.mutedFg,
@@ -117,7 +117,7 @@ class RunCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            local,
+                            location,
                             style: const TextStyle(
                               fontSize: 13,
                               color: AppColors.mutedFg,
@@ -128,7 +128,7 @@ class RunCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    _StatusBadge(tipo: statusTipo, texto: statusTexto),
+                    _StatusBadge(type: statusType, text: statusText),
                   ],
                 ),
               ),
@@ -141,10 +141,10 @@ class RunCard extends StatelessWidget {
 }
 
 class _StatusBadge extends StatelessWidget {
-  final StatusTipo tipo;
-  final String texto;
+  final StatusType type;
+  final String text;
 
-  const _StatusBadge({required this.tipo, required this.texto});
+  const _StatusBadge({required this.type, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -152,16 +152,16 @@ class _StatusBadge extends StatelessWidget {
     Color bgColor;
     bool hasBorder = false;
 
-    switch (tipo) {
-      case StatusTipo.inscrito:
+    switch (type) {
+      case StatusType.registered:
         textColor = Colors.black;
         bgColor = AppColors.success;
         break;
-      case StatusTipo.deadline:
+      case StatusType.deadline:
         textColor = Colors.black;
         bgColor = AppColors.alert;
         break;
-      case StatusTipo.naoInscrito:
+      case StatusType.notRegistered:
         textColor = AppColors.mutedFg;
         bgColor = AppColors.secondary;
         hasBorder = true;
@@ -178,7 +178,7 @@ class _StatusBadge extends StatelessWidget {
             : null,
       ),
       child: Text(
-        texto,
+        text,
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,

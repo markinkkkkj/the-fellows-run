@@ -4,8 +4,8 @@ import 'package:the_fellows_run/theme/app_colors.dart';
 import 'package:the_fellows_run/widgets/dotted_border.dart';
 
 /// Botão tracejado "Ver mais corridas" usado nas abas da home.
-class VerMaisButton extends StatelessWidget {
-  const VerMaisButton({super.key});
+class SeeMoreButton extends StatelessWidget {
+  const SeeMoreButton({super.key});
 
   @override
   Widget build(BuildContext context) {

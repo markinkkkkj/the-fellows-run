@@ -20,13 +20,13 @@ class RunHero extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16),
-        _InfoLinha(icone: Icons.calendar_today, texto: '14 de junho, 2026'),
+        _InfoRow(icon: Icons.calendar_today, text: '14 de junho, 2026'),
         SizedBox(height: 8),
-        _InfoLinha(icone: Icons.access_time, texto: '07:00 — largada na Lagoa'),
+        _InfoRow(icon: Icons.access_time, text: '07:00 — largada na Lagoa'),
         SizedBox(height: 8),
-        _InfoLinha(
-          icone: Icons.place_outlined,
-          texto: 'Lagoa Rodrigo de Freitas, Rio de Janeiro',
+        _InfoRow(
+          icon: Icons.place_outlined,
+          text: 'Lagoa Rodrigo de Freitas, Rio de Janeiro',
         ),
         SizedBox(height: 20),
         // Distância total
@@ -62,21 +62,21 @@ class RunHero extends StatelessWidget {
   }
 }
 
-class _InfoLinha extends StatelessWidget {
-  final IconData icone;
-  final String texto;
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
 
-  const _InfoLinha({required this.icone, required this.texto});
+  const _InfoRow({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icone, size: 15, color: AppColors.mutedFg),
+        Icon(icon, size: 15, color: AppColors.mutedFg),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
-            texto,
+            text,
             style: const TextStyle(fontSize: 14, color: AppColors.mutedFg),
           ),
         ),

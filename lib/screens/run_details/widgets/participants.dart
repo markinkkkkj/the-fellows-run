@@ -4,8 +4,8 @@ import 'package:the_fellows_run/theme/app_colors.dart';
 import 'package:the_fellows_run/widgets/dotted_border.dart';
 
 /// Lista de participantes da corrida na tela de detalhes.
-class Participantes extends StatelessWidget {
-  const Participantes({super.key});
+class Participants extends StatelessWidget {
+  const Participants({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,64 +52,64 @@ class Participantes extends StatelessWidget {
           ),
           child: Column(
             children: const [
-              _ParticipanteRow(
-                iniciais: 'MF',
-                nome: 'Mateus Ferreira',
-                meta: 'Meta 5 km',
-                ehVoce: true,
+              _ParticipantRow(
+                initials: 'MF',
+                name: 'Mateus Ferreira',
+                goal: 'Meta 5 km',
+                isYou: true,
               ),
-              _DividerSutil(),
-              _ParticipanteRow(
-                iniciais: 'JS',
-                nome: 'João Silva',
-                meta: 'Meta 5 km',
+              _SubtleDivider(),
+              _ParticipantRow(
+                initials: 'JS',
+                name: 'João Silva',
+                goal: 'Meta 5 km',
               ),
-              _DividerSutil(),
-              _ParticipanteRow(
-                iniciais: 'AC',
-                nome: 'Ana Costa',
-                meta: 'Meta 10 km',
+              _SubtleDivider(),
+              _ParticipantRow(
+                initials: 'AC',
+                name: 'Ana Costa',
+                goal: 'Meta 10 km',
               ),
-              _DividerSutil(),
-              _ParticipanteRow(
-                iniciais: 'RM',
-                nome: 'Rafael Mendes',
-                meta: 'Meta 5 km',
+              _SubtleDivider(),
+              _ParticipantRow(
+                initials: 'RM',
+                name: 'Rafael Mendes',
+                goal: 'Meta 5 km',
               ),
-              _DividerSutil(),
-              _ParticipanteRow(
-                iniciais: 'BL',
-                nome: 'Beatriz Lima',
-                meta: 'Meta 8 km',
+              _SubtleDivider(),
+              _ParticipantRow(
+                initials: 'BL',
+                name: 'Beatriz Lima',
+                goal: 'Meta 8 km',
               ),
             ],
           ),
         ),
         const SizedBox(height: 16),
-        const _VerMaisParticipantes(),
+        const _SeeMoreParticipants(),
       ],
     );
   }
 }
 
-class _ParticipanteRow extends StatelessWidget {
-  final String iniciais;
-  final String nome;
-  final String meta;
-  final bool ehVoce;
+class _ParticipantRow extends StatelessWidget {
+  final String initials;
+  final String name;
+  final String goal;
+  final bool isYou;
 
-  const _ParticipanteRow({
-    required this.iniciais,
-    required this.nome,
-    required this.meta,
-    this.ehVoce = false,
+  const _ParticipantRow({
+    required this.initials,
+    required this.name,
+    required this.goal,
+    this.isYou = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: ehVoce
+      decoration: isYou
           ? BoxDecoration(
               border: Border(
                 left: BorderSide(color: AppColors.primary, width: 2),
@@ -124,17 +124,17 @@ class _ParticipanteRow extends StatelessWidget {
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: ehVoce
+              color: isYou
                   ? AppColors.primary.withOpacity(0.15)
                   : AppColors.secondary,
               shape: BoxShape.circle,
             ),
             child: Text(
-              iniciais,
+              initials,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: ehVoce ? AppColors.primary : AppColors.mutedFg,
+                color: isYou ? AppColors.primary : AppColors.mutedFg,
               ),
             ),
           ),
@@ -145,7 +145,7 @@ class _ParticipanteRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    nome,
+                    name,
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
@@ -154,7 +154,7 @@ class _ParticipanteRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (ehVoce) ...[
+                if (isYou) ...[
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -178,7 +178,7 @@ class _ParticipanteRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            meta,
+            goal,
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -191,8 +191,8 @@ class _ParticipanteRow extends StatelessWidget {
   }
 }
 
-class _DividerSutil extends StatelessWidget {
-  const _DividerSutil();
+class _SubtleDivider extends StatelessWidget {
+  const _SubtleDivider();
 
   @override
   Widget build(BuildContext context) {
@@ -206,8 +206,8 @@ class _DividerSutil extends StatelessWidget {
   }
 }
 
-class _VerMaisParticipantes extends StatelessWidget {
-  const _VerMaisParticipantes();
+class _SeeMoreParticipants extends StatelessWidget {
+  const _SeeMoreParticipants();
 
   @override
   Widget build(BuildContext context) {
