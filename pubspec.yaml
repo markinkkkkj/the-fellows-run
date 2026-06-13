@@ -70,10 +70,9 @@ flutter_launcher_icons:
     generated: true
     background_color: "#121212"
     theme_color: "#C6FF3D"
-  # Ícone adaptativo do Android (opcional, recomendado). Precisa de um PNG
-  # com fundo transparente em assets/icon/icon_foreground.png:
-  # adaptive_icon_background: "#121212"
-  # adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  # Ícone adaptativo do Android: fundo limão + raio (frente transparente).
+  adaptive_icon_background: "#C6FF3D"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
