@@ -3,9 +3,13 @@ import 'package:flutter/services.dart';
 
 import 'package:the_fellows_run/theme/app_colors.dart';
 
-/// Pede a meta pessoal (km) do usuário. Retorna o valor digitado ou null se
-/// cancelado. [initial] pré-preenche o campo.
-Future<num?> showGoalDialog(BuildContext context, num initial) {
+/// Pede um valor em km. Retorna o valor digitado ou null se cancelado.
+/// [initial] pré-preenche o campo e [title] rotula o diálogo.
+Future<num?> showGoalDialog(
+  BuildContext context,
+  num initial, {
+  String title = 'Sua meta (km)',
+}) {
   final controller = TextEditingController(
     text: initial % 1 == 0 ? initial.toInt().toString() : initial.toString(),
   );
@@ -16,7 +20,7 @@ Future<num?> showGoalDialog(BuildContext context, num initial) {
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor: AppColors.card,
-      title: Text('Sua meta (km)', style: TextStyle(color: theme.onSurface)),
+      title: Text(title, style: TextStyle(color: theme.onSurface)),
       content: Form(
         key: formKey,
         child: TextFormField(
@@ -29,8 +33,10 @@ Future<num?> showGoalDialog(BuildContext context, num initial) {
           style: TextStyle(color: theme.onSurface),
           decoration: const InputDecoration(hintText: 'Ex: 5'),
           validator: (v) {
-            final value = num.tryParse((v ?? '').replaceAll(',', '.'));
-            if (value == null || value <= 0) return 'Meta inválida';
+            final text = (v ?? '').trim();
+            if (text.isEmpty) return null; // vazio é permitido (vira 0)
+            final value = num.tryParse(text.replaceAll(',', '.'));
+            if (value == null || value < 0) return 'Valor inválido';
             return null;
           },
         ),
@@ -44,10 +50,10 @@ Future<num?> showGoalDialog(BuildContext context, num initial) {
         TextButton(
           onPressed: () {
             if (formKey.currentState!.validate()) {
-              Navigator.pop(
-                context,
-                num.parse(controller.text.replaceAll(',', '.')),
-              );
+              final text = controller.text.trim();
+              final value =
+                  text.isEmpty ? 0 : num.parse(text.replaceAll(',', '.'));
+              Navigator.pop(context, value);
             }
           },
           child: Text('Salvar', style: TextStyle(color: theme.primary)),

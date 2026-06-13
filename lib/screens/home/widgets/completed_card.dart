@@ -8,16 +8,18 @@ class CompletedCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String date;
-  final String km;
-  final bool goalReached;
+  final String ran; // distância percorrida formatada, ou "—" se não registrada
+  final String goal; // meta formatada
+  final bool reached; // meta batida
 
   const CompletedCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.date,
-    required this.km,
-    required this.goalReached,
+    required this.ran,
+    required this.goal,
+    required this.reached,
   });
 
   @override
@@ -41,7 +43,7 @@ class CompletedCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-          // Título + subtítulo + data
+          // Título + local + data
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,37 +59,37 @@ class CompletedCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.mutedFg,
-                  ),
+                  style: const TextStyle(fontSize: 13, color: AppColors.mutedFg),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.mutedFg,
-                  ),
+                  style: const TextStyle(fontSize: 12, color: AppColors.mutedFg),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
-          // km percorrido + badge
+          // Percorrido + meta
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                km,
+                ran,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 6),
-              if (goalReached)
+              const SizedBox(height: 2),
+              Text(
+                'meta $goal',
+                style: const TextStyle(fontSize: 12, color: AppColors.mutedFg),
+              ),
+              const SizedBox(height: 4),
+              if (reached)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
@@ -102,15 +104,6 @@ class CompletedCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
-              else
-                const Text(
-                  'parcial',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.mutedFg,
-                  ),
                 ),
             ],
           ),

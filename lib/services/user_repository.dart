@@ -20,6 +20,17 @@ class UserRepository {
     return AppUser.fromCache(await UserCache.load());
   }
 
+  /// Busca o usuário atual direto do Firestore (fonte da verdade). Use quando
+  /// o cache pode estar desatualizado, ex: logo após o login.
+  Future<AppUser?> fetchCurrent() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return null;
+    final doc = await _firestore.collection('users').doc(uid).get();
+    final data = doc.data();
+    if (data == null) return null;
+    return AppUser.fromFirestore(uid, data);
+  }
+
   /// Sobe [newPhotoFile] pro Storage e devolve a nova URL. Se não houver foto
   /// nova nem atual, remove a foto do Storage e do cache. Retorna a URL final
   /// (ou null se a foto foi removida).

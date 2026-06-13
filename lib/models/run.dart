@@ -50,6 +50,10 @@ class Run {
   /// Data por extenso, ex: "14 de junho, 2026".
   String get fullDate => '${date.day} de ${_fullMonths[date.month - 1]}, ${date.year}';
 
+  /// Data curta, ex: "14 mai 2026".
+  String get shortDate =>
+      '${date.day} ${_months[date.month - 1].toLowerCase()} ${date.year}';
+
   /// Texto do prazo de inscrição, ex: "14 de junho · 06:00" (null se sem prazo).
   String? get deadlineLabel {
     final d = deadline;
