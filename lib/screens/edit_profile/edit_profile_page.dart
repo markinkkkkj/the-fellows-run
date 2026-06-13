@@ -10,6 +10,7 @@ import 'package:the_fellows_run/screens/camera.dart';
 import 'package:the_fellows_run/screens/edit_profile/widgets/password_dialogs.dart';
 import 'package:the_fellows_run/screens/edit_profile/widgets/photo_source_sheet.dart';
 import 'package:the_fellows_run/screens/edit_profile/widgets/profile_avatar_picker.dart';
+import 'package:the_fellows_run/services/registration_repository.dart';
 import 'package:the_fellows_run/services/user_repository.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 import 'package:the_fellows_run/widgets/app_text_field.dart';
@@ -32,6 +33,7 @@ class _EditProfileState extends State<EditProfile> {
     type: MaskAutoCompletionType.lazy,
   );
   final _repository = UserRepository();
+  final _registrationRepo = RegistrationRepository();
 
   AppUser? _user;
   String? _photoUrl;
@@ -185,15 +187,19 @@ class _EditProfileState extends State<EditProfile> {
         );
       }
 
-      await _repository.saveProfile(
-        AppUser(
-          uid: _user!.uid,
-          name: _nameController.text.trim(),
-          email: newEmail,
-          phone: _phoneController.text.replaceAll(RegExp(r'\D'), ''),
-          photoUrl: photoUrl,
-          role: _user!.role,
-        ),
+      final updated = AppUser(
+        uid: _user!.uid,
+        name: _nameController.text.trim(),
+        email: newEmail,
+        phone: _phoneController.text.replaceAll(RegExp(r'\D'), ''),
+        photoUrl: photoUrl,
+        role: _user!.role,
+      );
+      await _repository.saveProfile(updated);
+      // Propaga nome/foto pras inscrições (dados denormalizados).
+      await _registrationRepo.syncProfile(
+        name: updated.name,
+        photoUrl: updated.photoUrl,
       );
 
       if (mounted) {

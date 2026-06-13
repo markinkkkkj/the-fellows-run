@@ -5,10 +5,12 @@ import 'package:the_fellows_run/services/run_repository.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
 import 'package:the_fellows_run/widgets/app_text_field.dart';
 
-/// Formulário de criação de corrida (acesso restrito a admins via UI; a trava
-/// real fica nas Firestore Rules).
+/// Formulário de corrida (criar ou editar). Acesso restrito a admins via UI; a
+/// trava real fica nas Firestore Rules. Passe [run] para editar.
 class AddRunPage extends StatefulWidget {
-  const AddRunPage({super.key});
+  final Run? run;
+
+  const AddRunPage({super.key, this.run});
 
   @override
   State<AddRunPage> createState() => _AddRunPageState();
@@ -24,6 +26,20 @@ class _AddRunPageState extends State<AddRunPage> {
   DateTime? _deadline;
   bool _isSaving = false;
 
+  bool get _isEditing => widget.run != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final run = widget.run;
+    if (run != null) {
+      _titleController.text = run.title;
+      _locationController.text = run.location;
+      _date = run.date;
+      _deadline = run.deadline;
+    }
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -36,7 +52,7 @@ class _AddRunPageState extends State<AddRunPage> {
     final date = await showDatePicker(
       context: context,
       initialDate: initial ?? now,
-      firstDate: now,
+      firstDate: DateTime(now.year - 5),
       lastDate: DateTime(now.year + 2),
     );
     if (date == null || !mounted) return null;
@@ -68,22 +84,30 @@ class _AddRunPageState extends State<AddRunPage> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final run = Run(
-        id: '',
+        id: widget.run?.id ?? '',
         title: _titleController.text.trim(),
         location: _locationController.text.trim(),
         date: _date!,
         deadline: _deadline,
       );
-      await _repository.create(run);
+      if (_isEditing) {
+        await _repository.update(run);
+      } else {
+        await _repository.create(run);
+      }
       if (mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Corrida criada com sucesso!')),
+          SnackBar(
+            content: Text(
+              _isEditing ? 'Corrida atualizada!' : 'Corrida criada com sucesso!',
+            ),
+          ),
         );
         Navigator.pop(context);
       }
     } catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Erro ao criar corrida: $error')),
+        SnackBar(content: Text('Erro ao salvar corrida: $error')),
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -145,7 +169,7 @@ class _AddRunPageState extends State<AddRunPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Nova corrida',
+          _isEditing ? 'Editar corrida' : 'Nova corrida',
           style: TextStyle(color: theme.onPrimary, fontWeight: FontWeight.w700),
         ),
         backgroundColor: theme.primary,
@@ -214,7 +238,7 @@ class _AddRunPageState extends State<AddRunPage> {
                             color: Colors.black,
                           ),
                         )
-                      : const Text('Criar corrida'),
+                      : Text(_isEditing ? 'Salvar alterações' : 'Criar corrida'),
                 ),
                 const SizedBox(height: 16),
               ],
