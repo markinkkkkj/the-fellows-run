@@ -1,11 +1,11 @@
 {
-    "name": "the_fellows_run",
-    "short_name": "the_fellows_run",
+    "name": "The Fellows Run",
+    "short_name": "Fellows Run",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Organize corridas em grupo: eventos, inscrições, metas e distância percorrida.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
