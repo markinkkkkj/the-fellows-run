@@ -3,7 +3,7 @@
 App multiplataforma para organizar corridas de um grupo de corrida: criação de eventos, inscrições,
 metas pessoais e distância percorrida por participante.
 
-**Demo web:** https://the-fellows-run.web.app
+A versão web foi publicada no Firebase Hosting durante o projeto e hoje está desativada.
 
 ## Funcionalidades
 
@@ -46,11 +46,4 @@ gerado pelo `flutterfire configure`).
 flutter pub get
 flutter run            # dispositivo ou emulador conectado
 flutter run -d chrome  # versão web
-```
-
-Para publicar a versão web:
-
-```bash
-flutter build web
-firebase deploy --only hosting
 ```
