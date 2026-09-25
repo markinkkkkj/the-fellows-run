@@ -3,7 +3,7 @@
 App multiplataforma para organizar corridas de um grupo de corrida: criação de eventos, inscrições,
 metas pessoais e distância percorrida por participante.
 
-A versão web foi publicada no Firebase Hosting durante o projeto e hoje está desativada.
+**Demo web:** https://the-fellows-run.web.app
 
 ## Funcionalidades
 
