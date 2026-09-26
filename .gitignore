@@ -46,3 +46,6 @@ app.*.map.json
 
 # Artefatos de build do Gradle
 /android/build/
+
+# Cache local da CLI do Firebase
+.firebase/
