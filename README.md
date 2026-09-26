@@ -4,6 +4,7 @@ App multiplataforma para organizar corridas de um grupo de corrida: criação de
 metas pessoais e distância percorrida por participante.
 
 **Demo web:** https://the-fellows-run.web.app
+
 **Android:** baixe o APK na [última release](https://github.com/markinkkkkj/the-fellows-run/releases/latest).
 
 ## Funcionalidades
