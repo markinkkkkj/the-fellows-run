@@ -7,6 +7,7 @@ import 'package:the_fellows_run/widgets/app_text_field.dart';
 import 'package:the_fellows_run/widgets/auth/auth_submit_button.dart';
 import 'package:the_fellows_run/widgets/auth/auth_switch_link.dart';
 import 'package:the_fellows_run/widgets/auth/password_field.dart';
+import 'package:the_fellows_run/widgets/study_project_notice.dart';
 import '../services/user_cache.dart';
 
 class Login extends StatefulWidget {
@@ -113,7 +114,10 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
+
+              const StudyProjectNotice(),
+              const SizedBox(height: 28),
 
               // Título
               Text(

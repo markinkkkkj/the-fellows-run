@@ -1,0 +1,28 @@
+name: Web build
+
+# Execução manual: compila a versão web e guarda como artefato.
+# A publicação no Firebase Hosting é feita à mão (firebase deploy --only hosting).
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mesma versão do build do APK.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.9
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter build web --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: build/web

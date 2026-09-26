@@ -3,6 +3,13 @@
 App multiplataforma para organizar corridas de um grupo de corrida: criação de eventos, inscrições,
 metas pessoais e distância percorrida por participante.
 
+> **Projeto de estudo.** Feito para estudar Flutter numa avaliação da faculdade, sem desenvolvimento
+> ativo. A demo e o APK ficam disponíveis só para demonstração. Para testar, o cadastro aceita dados
+> fictícios (com um e-mail fictício não dá para recuperar a senha). Se você usar dados reais, eles
+> ficam protegidos pelas regras de acesso do Firebase ([`firestore.rules`](firestore.rules)): e-mail e
+> telefone só podem ser lidos pelo próprio usuário; nome e foto aparecem para quem está logado, nas
+> corridas em que você se inscrever.
+
 **Demo web:** https://the-fellows-run.web.app
 
 **Android:** baixe o APK na [última release](https://github.com/markinkkkkj/the-fellows-run/releases/latest).

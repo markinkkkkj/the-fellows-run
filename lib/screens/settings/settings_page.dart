@@ -6,6 +6,7 @@ import 'package:the_fellows_run/models/user.dart';
 import 'package:the_fellows_run/screens/edit_profile/edit_profile_page.dart';
 import 'package:the_fellows_run/services/user_cache.dart';
 import 'package:the_fellows_run/theme/app_colors.dart';
+import 'package:the_fellows_run/widgets/study_project_notice.dart';
 
 import 'widgets/settings_tiles.dart';
 
@@ -189,7 +190,7 @@ class _SettingsState extends State<Settings> {
                 SettingsTile(
                   icon: Icons.info_outline,
                   label: 'Sobre o app',
-                  onTap: () {},
+                  onTap: () => showAboutStudyProject(context),
                 ),
                 SettingsTile(
                   icon: Icons.help_outline,

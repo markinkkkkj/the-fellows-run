@@ -8,6 +8,7 @@ import 'package:the_fellows_run/widgets/app_text_field.dart';
 import 'package:the_fellows_run/widgets/auth/auth_submit_button.dart';
 import 'package:the_fellows_run/widgets/auth/auth_switch_link.dart';
 import 'package:the_fellows_run/widgets/auth/password_field.dart';
+import 'package:the_fellows_run/widgets/study_project_notice.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -168,6 +169,8 @@ class _SignupState extends State<Signup> {
                   'Preencha os dados para continuar',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+                const SizedBox(height: 16),
+                const StudyProjectNotice(),
                 const SizedBox(height: 24),
 
                 // Nome completo
