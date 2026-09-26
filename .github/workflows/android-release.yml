@@ -21,9 +21,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      # Versão fixa: o Flutter mais novo exige Gradle 8.14, e o projeto usa 8.13.
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: 3.44.9
           cache: true
 
       - name: Chave de assinatura
