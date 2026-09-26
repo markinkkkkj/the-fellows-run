@@ -54,6 +54,24 @@
             "value": "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
           }
         ]
+      },
+      {
+        "source": "**/*.@(html|js|json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
       }
     ]
   },
